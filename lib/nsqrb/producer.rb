@@ -8,7 +8,7 @@ module Nsqrb
     end
 
     def post!(obj)
-      res = @http.post("/pub?topic=" + @topic, obj.to_json)
+      res = @http.post("/pub?topic=#{@topic}", obj.to_s)
       return if res.code == "200"
       res.error!
     end
