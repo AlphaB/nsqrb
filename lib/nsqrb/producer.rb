@@ -1,3 +1,5 @@
+require 'net/http'
+
 module Nsqrb
   class Producer
     def initialize(host, port, topic)

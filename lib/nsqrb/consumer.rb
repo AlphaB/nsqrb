@@ -1,8 +1,10 @@
+require 'socket'
+
 module Nsqrb
   class Consumer
     attr_reader :options, :messages, :errors, :responses
 
-    TCP_BUFFER = 64.kilobytes
+    TCP_BUFFER = 64 * 1024
     PROTOCOL_VERSION = "v2"
 
     def initialize(options = {})
@@ -27,14 +29,17 @@ module Nsqrb
 
     def confirm(message)
       @socket.write Command::Fin.new(message_id: message.id).to_line
+      update_rdy
     end
 
     def requeue(message, timeout = 0)
       @socket.write Command::Req.new(message_id: message.id, timeout: timeout).to_line
+      update_rdy
     end
 
     def touch(message)
       @socket.write Command::Touch.new(message_id: message.id).to_line
+      update_rdy
     end
 
     def close!
@@ -55,6 +60,11 @@ module Nsqrb
     end
 
     private
+
+
+      def update_rdy
+        @socket.write Command::Rdy.new(count: 1).to_line
+      end
 
       def identify_defaults
         return @identify_defaults if @identify_defaults

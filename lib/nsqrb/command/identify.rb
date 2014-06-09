@@ -6,7 +6,7 @@ module Nsqrb
         hash[key] = @args[key] if @args[key].nil?
         hash
       end
-      payload = MultiJson.dump(filtered)
+      payload = JSON.dump(filtered)
       [name, "\n", payload.length, payload].pack('a*a*l>a*')
     end
 
